@@ -1,0 +1,604 @@
+%% This Beamer template is based on the one found here: https://github.com/sanhacheong/stanford-beamer-presentation, and edited to be used for Stanford ARM Lab
+
+\documentclass[10pt]{beamer}
+%\mode<presentation>{}
+
+\usepackage{media9}
+\usepackage{amssymb,amsmath,amsthm,enumerate}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage[parfill]{parskip}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{bm}
+\usepackage{amsfonts,amscd}
+\usepackage[]{units}
+\usepackage{listings}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{tcolorbox}
+\usepackage{physics}
+
+% Packages for writing in spanish
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+
+% Packages for quantum circuits
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
+
+% For using gather for equations
+\usepackage{amsmath}
+
+% Enable colored hyperlinks
+\hypersetup{colorlinks=true}
+
+% The following three lines are for crossmarks & checkmarks
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+% Numbered captions of tables, pictures, etc.
+\setbeamertemplate{caption}[numbered]
+
+%\usepackage[superscript,biblabel]{cite}
+\usepackage{algorithm2e}
+\renewcommand{\thealgocf}{}
+
+% Bibliography settings
+\usepackage[style=ieee]{biblatex}
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+\addbibresource{references.bib}
+
+% Glossary entries
+\usepackage[acronym]{glossaries}
+\newacronym{ML}{ML}{machine learning}
+\newacronym{HRI}{HRI}{human-robot interactions}
+\newacronym{RNN}{RNN}{Recurrent Neural Network}
+\newacronym{LSTM}{LSTM}{Long Short-Term Memory}
+
+
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+\theoremstyle{definition}
+
+\newcommand{\empy}[1]{{\color{darkorange}\emph{#1}}}
+\newcommand{\empr}[1]{{\color{cardinalred}\emph{#1}}}
+\newcommand{\examplebox}[2]{
+\begin{tcolorbox}[colframe=darkcardinal,colback=boxgray,title=#1]
+#2
+\end{tcolorbox}}
+
+\usetheme{Stanford} 
+\input{./style_files_stanford/my_beamer_defs.sty}
+\logo{\includegraphics[height=0.4in]{./style_files_stanford/SU_New_BlockStree_2color.png}}
+
+% commands to relax beamer and subfig conflicts
+% see here: https://tex.stackexchange.com/questions/426088/texlive-pretest-2018-beamer-and-subfig-collide
+\makeatletter
+\let\@@magyar@captionfix\relax
+\makeatother
+
+\title[Quantum error-correction]{Quantum error-correction}
+%\subtitle{Subtitle Of Presentation}
+
+%\beamertemplatenavigationsymbolsempty
+
+% Allows using \insertframetitle on the footline
+\providecommand\insertframetitle{}
+
+
+\begin{document}
+
+\author[Nicolás Tallar]{
+	\begin{tabular}{c} 
+	\Large
+	%Author Name\\
+    %\footnotesize \href{mailto:authoremail@stanford.edu}{authoremail@stanford.edu}
+\end{tabular}
+\vspace{-4ex}}
+
+\institute{
+	\vskip 5pt
+	\begin{figure}[t]
+		\centering
+		\includegraphics[height=0.5in]{./images/logo_dc.jpg}
+	\end{figure}
+	\vskip 5pt
+	Procesamiento cuántico de información\\
+	Segundo cuatrimestre de 2020\\
+	\vskip 3pt
+}
+
+% \date{June 15, 2020}
+\date{\today}
+
+\begin{noheadline}
+\begin{frame}
+    \frametitle{Introduction}
+    \maketitle
+\end{frame}
+\end{noheadline}
+
+\setbeamertemplate{itemize items}[default]
+\setbeamertemplate{itemize subitem}[circle]
+
+\begin{frame}
+	\frametitle{Quantum error correction} % Table of contents slide, comment this block out to remove it
+	\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
+\end{frame}
+
+
+\begin{frame}[allowframebreaks]
+\frametitle{Intro}
+	
+    \textbf{Idea principal}: Encodear mensajes de forma tal que sean resilientes al ruido \\
+    \hspace{1cm} $\rightarrow$ Redundancia
+
+    \vspace{4mm}
+    
+    \textbf{Asunci\'on:} el encodeo y desencodeo de mensajes se puede hacer sin error
+    \begin{itemize}
+        \item \'Util para cuando se env\'ian mensajes por un canal ruidoso
+        \item Existen formas de quitar esta asunci\'on
+    \end{itemize}
+
+    \framebreak
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Decoding} & \qw  \\
+                &                                   & \qw &                     & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                    &
+        \end{quantikz}
+        \caption{Esquema general de corrección de errores}
+    \end{figure}
+	
+\end{frame}
+
+\section{Corrección de errores clásicos}
+% `[allowframebreaks]` can be used to have multiple slides in one frame, where the slides are continued with the suffix "(cont.)"; `[allowframebreaks]` can be used with `\framebreak` to manually break each frame into multiple slides
+\begin{frame}[allowframebreaks]
+    \frametitle{Corrección de errores clásicos}
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Decoding} & \qw  \\
+                &                                   & \qw &                     & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                    &
+        \end{quantikz}
+    \end{figure}
+
+    \begin{itemize}
+        \item \textbf{Channel:} \textit{binary simmetric channel}, alterna cada bit con probabilidad \textit{p}
+        \item \textbf{Encoding:}
+        \begin{gather*}
+            0 \rightarrow 000 \\
+            1 \rightarrow 111
+        \end{gather*}
+        \item \textbf{Decoding:} Majority voting
+    \end{itemize}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textit{Sin corrección:} p
+        \item \textit{Con corrección:} $p_e = 3p^2 - 2p^3$ \hfill $\leftarrow$ 2 o 3 bits se alternaron
+        \begin{equation*}
+            p_e < p\ si\ p < \frac{1}{2}
+        \end{equation*}
+        % = prob(2 flip) + prob(3 flip) = 3(1-p)p^2 + p^3
+    \end{itemize}
+
+\end{frame}
+
+
+\section{Corrección de errores cuánticos}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Corrección de errores cuánticos}
+
+    \textbf{Dificultades:}
+    \begin{itemize}
+        \item No cloning
+        \item Los errores son continuos
+        \item Medir destruye información
+    \end{itemize}
+
+    \framebreak
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Error \ detection} & \qw & \gate[3]{Recovery} & \qw  \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   &     &                     &     & \cwbend{-3}                 & \cw & \cwbend{-3}        &
+        \end{quantikz}
+        \caption{Esquema general de corrección de errores cuánticos}
+    \end{figure}
+
+\end{frame}
+
+\subsection{3 qubit flip code}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{3 qubit flip code}
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Error \ detection} & \qw & \gate[3]{Recovery} & \qw  \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   &     &                     &     & \cwbend{-3}                 & \cw & \cwbend{-3}        &
+        \end{quantikz}
+    \end{figure}
+
+    \begin{itemize}
+        \item \textbf{Channel:} \textit{bit flip channel}, alterna $\ket{\psi}$ a $X \ket{\psi}$ con probabilidad \textit{p}
+        \item \textbf{Encoding:} $a \ket{0} + b \ket{1} \rightarrow a \ket{000} + b \ket{111}$
+        \begin{gather*}
+            \ket{0} \rightarrow \ket{000} \\
+            \ket{1} \rightarrow \ket{111}
+        \end{gather*}
+        \item \textbf{Error detection \& recovery:} error syndromes
+    \end{itemize}
+
+    \framebreak
+    
+    \begin{itemize}
+        \item \textbf{Encoding:}
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \qw \\
+            \lstick{$\ket{0}$}    & \targ{}  & \qw      & \qw \\
+            \lstick{$\ket{0}$}    & \qw      & \targ{}  & \qw 
+        \end{quantikz}
+    \end{figure}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:}
+    \end{itemize}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | }
+            \hline
+            Error detection & Recovery \\ 
+            \hline
+            $P_0 \equiv \ket{000}\bra{000} + \ket{111}\bra{111} \rightarrow$ no error       & $I \otimes I \otimes I$ \\
+            $P_1 \equiv \ket{100}\bra{100} + \ket{011}\bra{011} \rightarrow$ first flipped  & $X \otimes I \otimes I$ \\
+            $P_2 \equiv \ket{010}\bra{010} + \ket{101}\bra{101} \rightarrow$ second flipped & $I \otimes X \otimes I$ \\
+            $P_3 \equiv \ket{001}\bra{001} + \ket{110}\bra{110} \rightarrow$ third flipped  & $I \otimes I \otimes X$ \\
+            \hline
+       \end{tabular}
+    \end{center}
+    % P0 + P1 + P2 + P3 = I -> la medición me va a dar algunos de ellos
+    % Ante un caso (no error/bit i flippado) Pi da con probabilidad 1 y no altera el estado
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{3 qubit flip code - análisis de error}
+
+    \textbf{Análisis simplificado}: El algoritmo funciona perfectamente si hay bit flips en 1 o menos de los 3 qubits, lo cual sucede con probabilidad
+    \[
+        p_c = (1 - p)^3 + 3p(1 - p)^2 = 1 - 3p^2 + 2p^3
+    \]
+
+    Comparado con no utilizarlo:
+    \[
+        p_c > 1 - p \ si \ p < \frac{1}{2}
+    \]
+
+    \framebreak
+
+    \textbf{Fidelidad:} medición de cercanía de estados
+    \begin{gather*}
+        F(\ket{\psi}, \rho) = \sqrt{\bra{\psi} \rho \ket{\psi}} \\
+        0 \leqslant F(\ket{\psi}, \rho) \leqslant 1
+    \end{gather*}
+
+    \textbf{Fidelidad sin corrección:}
+    \begin{gather*}
+        \rho = (1 - p) \ket{\psi}\bra{\psi} + p X \ket{\psi}\bra{\psi} X \\
+        F(\ket{\psi}, \rho) = \sqrt{1 - p}
+    \end{gather*}
+    
+    \textbf{Fidelidad mínima con corrección:}
+    \begin{gather*}
+        \rho = [(1 - p)^3 + 3p(1 - p)^2] \ket{\psi}\bra{\psi} + ... \\
+        F(\ket{\psi}, \rho) \geqslant \sqrt{(1 - p)^3 + 3p(1 - p)^2}
+    \end{gather*}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{3 qubit flip code - alternative error detection}
+
+    En vez de medir los projectores, se miden los observables
+    \begin{itemize}
+        \item $Z_1 Z_2 = Z \otimes Z \otimes I$ \\
+        \hspace{0.7cm} $\rightarrow$ +1, $1^{er}$ y $2^{do}$ qubit son iguales, o -1 si son distintos
+        \item $Z_2 Z_3 = I \otimes Z \otimes Z$ \\
+        \hspace{0.7cm} $\rightarrow$ +1, $2^{do}$ y $3^{er}$ qubit son iguales, o -1 si son distintos
+    \end{itemize}
+
+    \begin{center}
+        \begin{tabular}{ | l | l | l | }
+            \hline
+            Projectores & $1^{er}$ medición & $2^{da}$ medición \\ 
+            \hline
+            $P_0$ & +1 & +1 \\
+            $P_1$ & -1 & +1 \\
+            $P_2$ & -1 & -1 \\
+            $P_3$ & +1 & -1 \\
+            \hline
+       \end{tabular}
+    \end{center}
+
+\end{frame}
+
+\subsection{3 qubit phase code}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{3 qubit phase code}
+
+    \begin{itemize}
+        \item \textbf{Channel:} \textit{phase flip channel}, alterna $\ket{\psi}$ a $Z \ket{\psi}$ con probabilidad \textit{p} \\
+        \vspace{0.6cm}
+        Es \textit{unitarly equivalent} a los \textit{bit flip channel} ya que $X = HZH$:
+
+        \begin{figure}[H]
+            \centering
+            \begin{quantikz}
+                \qw & \gate{Bit \ flip \ channel} & \qw
+            \end{quantikz} \\
+            = \\
+            \begin{quantikz}
+                \qw & \gate{H} & \gate{Phase \ flip \ channel} & \gate{H^{\dag} = H} & \qw
+            \end{quantikz}
+        \end{figure}
+
+    \end{itemize}
+
+    \framebreak
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Error \ detection} & \qw & \gate[3]{Recovery} & \qw  \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   &     &                     &     & \cwbend{-3}                 & \cw & \cwbend{-3}        &
+        \end{quantikz}
+    \end{figure}
+
+    \begin{itemize}
+        \item \textbf{Channel:} \textit{phase flip channel}, alterna $\ket{\psi}$ a $Z \ket{\psi}$ con probabilidad \textit{p}
+        \item \textbf{Encoding:} $a \ket{0} + b \ket{1} \rightarrow a \ket{+++} + b \ket{---}$
+        \begin{gather*}
+            \ket{0} \rightarrow \ket{+++} \\
+            \ket{1} \rightarrow \ket{---}
+        \end{gather*}
+        \item \textbf{Error detection \& recovery:} error syndromes
+    \end{itemize}
+
+    \framebreak
+    
+    \begin{itemize}
+        \item \textbf{Encoding:}
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \gate{H} & \qw \\
+            \lstick{$\ket{0}$}    & \targ{}  & \qw      & \gate{H} & \qw \\
+            \lstick{$\ket{0}$}    & \qw      & \targ{}  & \gate{H} & \qw 
+        \end{quantikz}
+    \end{figure}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:}
+    \end{itemize}
+
+    \begin{figure}
+        \centering
+        \[
+            P_j \rightarrow H^{\otimes^3} P_j H^{\otimes^3}
+        \]
+        \caption{Projectores adaptados}
+    \end{figure}
+    % Las Hs del lado izquierdo son para que el estado no cambie
+
+    \begin{figure}
+        \centering
+        \begin{gather*}
+            H^{\otimes^3} Z_1 Z_2 H^{\otimes^3} = X_1 X_2 \\
+            H^{\otimes^3} Z_2 Z_3 H^{\otimes^3} = X_2 X_3
+        \end{gather*}
+        \caption{Observables adaptados}
+    \end{figure}
+    % Las Hs del lado izquierdo son para que el estado no cambie
+    % X = |+><+| - |-><-|
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{3 qubit phase code - análisis de error}
+
+    Aplican los mismos resultados que en el análisis del \textit{3 qubit flip code}
+
+\end{frame}
+
+\subsection{Shor code}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Shor code}
+
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \qw & \gate[3, nwires={2, 3}]{Encoding} & \qw & \gate[3]{Channel}   & \qw & \gate[3]{Error \ detection} & \qw & \gate[3]{Recovery} & \qw  \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   & \qw &                     & \qw &                             & \qw &                    & \\
+                &                                   &     &                     &     & \cwbend{-3}                 & \cw & \cwbend{-3}        &
+        \end{quantikz}
+    \end{figure}
+
+    \begin{itemize}
+        \item \textbf{Channel:} cualquier error en un único qubit
+        \item \textbf{Encoding:} concatenation de 3 qubit phase flip code y 3 qubit bit flip code 
+        \item \textbf{Error detection \& recovery:} ???
+    \end{itemize}
+
+    \framebreak
+    
+    \begin{itemize}
+        \item \textbf{Encoding:}
+    \end{itemize}
+
+    \begin{gather*}
+        \ket{0} \rightarrow \ket{0_L} \equiv \frac{(\ket{000} + \ket{111})(\ket{000} + \ket{111})(\ket{000} + \ket{111})}{2\sqrt{2}} \\
+        \ket{1} \rightarrow \ket{1_L} \equiv \frac{(\ket{000} - \ket{111})(\ket{000} - \ket{111})(\ket{000} - \ket{111})}{2\sqrt{2}}
+    \end{gather*}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Encoding:}
+    \end{itemize}
+
+    \begin{figure}[H]
+        \centering
+        \begin{tikzpicture}
+        \node[scale=0.85] {
+        \begin{quantikz}
+            \lstick{$\ket{\psi}$} & \ctrl{3} & \ctrl{6} & \gate{H}              & \qw                 & \ctrl{1} & \ctrl{2} & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \targ{}  & \qw      & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \qw      & \targ{}  & \qw \\
+            \lstick{$\ket{0}$}    & \targ{}  & \qw      & \gate{H}              & \qw                 & \ctrl{1} & \ctrl{2} & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \targ{}  & \qw      & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \qw      & \targ{}  & \qw \\
+            \lstick{$\ket{0}$}    & \qw      & \targ{}  & \gate{H}              & \qw                 & \ctrl{1} & \ctrl{2} & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \targ{}  & \qw      & \qw \\
+                                  &          &          &                       & \lstick{$\ket{0}$}  & \qw      & \targ{}  & \qw
+        \end{quantikz}
+        };
+        \end{tikzpicture}
+    \end{figure}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:} suponiendo que hubo bit flip en algún qubit:
+    
+        \vspace{0.4cm}
+
+        \begin{itemize}
+            \item \textit{Detection:} Son detectadas mediante mediciones de $Z_iZ_j$
+            \item \textit{Recovery:} Se aplica X al qubit afectado
+        \end{itemize}
+    \end{itemize}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:} suponiendo que hubo phase flip en algún qubit:
+    
+        \vspace{0.4cm}
+
+        \begin{itemize}
+            \item \textit{Detection:} Phase flip en un qubit causa que se cambie el signo del bloque afectado
+            
+            $\ket{000} + \ket{111} \rightarrow \ket{000} - \ket{111}$
+
+            Por lo que puede ser detectado comparando los signos de los bloques
+
+            \item \textit{Recovery:} Se aplica Z a cualquier qubit del bloque afectado
+        \end{itemize}
+    \end{itemize}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:} suponiendo que hubo phase y bit flip en algún qubit:
+    
+        \vspace{0.4cm}
+
+        \begin{enumerate}
+            \item Correr el procedimiento de corrección y detección de bit flip, después del cual solo quedará un phase flip en el qubit afectado
+            \item Correr el procedimiento de corrección y detección de phase flip
+        \end{enumerate}
+    \end{itemize}
+
+    \framebreak
+
+    \begin{itemize}
+        \item \textbf{Error detection \& recovery:} cualquier error en algún qubit:
+    
+        \vspace{0.2cm}
+
+        Representando el error como una operación que preserva traza $\xi$, dado un estado inicial $\ket{\psi}$:
+        \[
+            \xi(\ket{\psi}\bra{\psi}) = \sum_i{E_i\ket{\psi}\bra{\psi}E_i^{\dag}}
+        \]
+
+        Cada $E_i$ puede expandirse como:
+        \[
+            E_i = e_{i0}I + e_{i1}X_1 + e_{i2}Z_1 + e_{i3}X_1Z_1
+        \]
+        
+        \framebreak
+
+        Entonces un error arbitrario se puede pensar como que lleva un estado $\psi$ a una superposición de los estados:
+        \[
+            \ket{\psi}, X_1\ket{\psi}, Z_1\ket{\psi}, X_1Z_1\ket{\psi}
+        \]
+        % En realidad también estará en estados mixtos como X1|psi><psi|Z1, que no sobrevivirán a los procedimientos
+
+        Por lo que el procedimiento para corregirlo es:
+
+        \begin{enumerate}
+            \item Correr el procedimiento de corrección y detección de bit flip, después del cual el estado quedará en superposición de:
+            
+            \[
+                \ket{\psi}, X_1\ket{\psi}
+            \]
+
+            \item Correr el procedimiento de corrección y detección de phase flip
+        \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Shor code - error en más de un qubit}
+
+    Que pasa si el error afecta a más de un qubit?
+
+    \begin{itemize}
+        \item Si el error de cada qubit es independiente se lo puede achicar mediante los procedimientos descritos hasta ahora
+        \item Sino hay que utilizar otros procedimientos
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Bibliography}
+
+    \nocite{*}
+    \printbibliography
+\end{frame}
+
+\end{document}
