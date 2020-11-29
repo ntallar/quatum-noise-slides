@@ -133,9 +133,15 @@
 
 \begin{frame}[allowframebreaks]
 \frametitle{Intro}
-	
-    \textbf{Idea principal}: Encodear mensajes de forma tal que sean resilientes al ruido \\
-    \hspace{1cm} $\rightarrow$ Redundancia
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    %   Comenzar con lo del canal ruidoso, hablando del ejemplo del libro
+    %   Continuar con como esto se puede después expandir a gates ruidosas
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+    \textbf{Idea principal}: Agregar redundancia a los mensajes para que sean resilientes al ruido
 
     \vspace{4mm}
     
@@ -160,7 +166,6 @@
 \end{frame}
 
 \section{Corrección de errores clásicos}
-% `[allowframebreaks]` can be used to have multiple slides in one frame, where the slides are continued with the suffix "(cont.)"; `[allowframebreaks]` can be used with `\framebreak` to manually break each frame into multiple slides
 \begin{frame}[allowframebreaks]
     \frametitle{Corrección de errores clásicos}
 
@@ -185,6 +190,13 @@
 
     \framebreak
 
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    %   Solo mencionar que haber corregido el error es mejor a no haberlo hecho,
+    %   no entrar en detalles sobre porque
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     \begin{itemize}
         \item \textit{Sin corrección:} p
         \item \textit{Con corrección:} $p_e = 3p^2 - 2p^3$ \hfill $\leftarrow$ 2 o 3 bits se alternaron
@@ -202,14 +214,14 @@
 \begin{frame}[allowframebreaks]
     \frametitle{Corrección de errores cuánticos}
 
-    \textbf{Dificultades:}
-    \begin{itemize}
-        \item No cloning
-        \item Los errores son continuos
-        \item Medir destruye información
-    \end{itemize}
+    %\textbf{Dificultades:}
+    %\begin{itemize}
+    %    \item No cloning
+    %    \item Los errores son continuos
+    %    \item Medir destruye información
+    %\end{itemize}
 
-    \framebreak
+    %\framebreak
 
     \begin{figure}[H]
         \centering
@@ -287,6 +299,14 @@
 \end{frame}
 
 \begin{frame}[allowframebreaks]
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    %   Solo mencionar que haber corregido el error es mejor a no haberlo hecho,
+    %   ???
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
     \frametitle{3 qubit flip code - análisis de error}
 
     \textbf{Análisis simplificado}: El algoritmo funciona perfectamente si hay bit flips en 1 o menos de los 3 qubits, lo cual sucede con probabilidad
@@ -460,7 +480,7 @@
     \begin{itemize}
         \item \textbf{Channel:} cualquier error en un único qubit
         \item \textbf{Encoding:} concatenation de 3 qubit phase flip code y 3 qubit bit flip code 
-        \item \textbf{Error detection \& recovery:} ???
+        \item \textbf{Error detection \& recovery:} primero corriendo el procedimiento para bit flip y luego para phase flip
     \end{itemize}
 
     \framebreak
@@ -524,7 +544,7 @@
             
             $\ket{000} + \ket{111} \rightarrow \ket{000} - \ket{111}$
 
-            Por lo que puede ser detectado comparando los signos de los bloques
+            Por lo que puede ser detectado comparando los signos de los bloques % FIXME: como se hace esto?
 
             \item \textit{Recovery:} Se aplica Z a cualquier qubit del bloque afectado
         \end{itemize}
