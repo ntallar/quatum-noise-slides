@@ -141,15 +141,16 @@
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+    \begin{figure}[H]
+        \centering
+        \begin{quantikz}
+            \lstick{$\ket{\psi}$} & \gate{Noisy \ channel} & \rstick{$\ket{\psi}$}\qw
+        \end{quantikz}
+    \end{figure}
+
     \textbf{Idea principal}: Agregar redundancia a los mensajes para que sean resilientes al ruido
 
-    \vspace{4mm}
-    
-    \textbf{Asunci\'on:} el encodeo y desencodeo de mensajes se puede hacer sin error
-    \begin{itemize}
-        \item \'Util para cuando se env\'ian mensajes por un canal ruidoso
-        \item Existen formas de quitar esta asunci\'on
-    \end{itemize}
+    \textit{Las ideas presentadas se usan como base para tolerar fallas en cualquier operación cuántica}
 
     \framebreak
 
@@ -160,8 +161,12 @@
                 &                                   & \qw &                     & \qw &                    & \\
                 &                                   & \qw &                     & \qw &                    &
         \end{quantikz}
-        \caption{Esquema general de corrección de errores}
     \end{figure}
+
+    \textbf{Asunci\'on:} el encodeo y desencodeo de mensajes se puede hacer sin error
+    \begin{itemize}
+        \item Existen formas de quitar esta asunci\'on
+    \end{itemize}
 	
 \end{frame}
 
@@ -214,15 +219,6 @@
 \begin{frame}[allowframebreaks]
     \frametitle{Corrección de errores cuánticos}
 
-    %\textbf{Dificultades:}
-    %\begin{itemize}
-    %    \item No cloning
-    %    \item Los errores son continuos
-    %    \item Medir destruye información
-    %\end{itemize}
-
-    %\framebreak
-
     \begin{figure}[H]
         \centering
         \begin{quantikz}
@@ -231,8 +227,14 @@
                 &                                   & \qw &                     & \qw &                             & \qw &                    & \\
                 &                                   &     &                     &     & \cwbend{-3}                 & \cw & \cwbend{-3}        &
         \end{quantikz}
-        \caption{Esquema general de corrección de errores cuánticos}
     \end{figure}
+
+    \textbf{Dificultades:}
+    \begin{itemize}
+        \item No cloning
+        \item Los errores son continuos
+        \item Medir puede destruir información
+    \end{itemize}
 
 \end{frame}
 
@@ -296,6 +298,8 @@
     \end{center}
     % P0 + P1 + P2 + P3 = I -> la medición me va a dar algunos de ellos
     % Ante un caso (no error/bit i flippado) Pi da con probabilidad 1 y no altera el estado
+
+    \textbf{Error syndrome:} medición que no altera el estado medido
 \end{frame}
 
 \begin{frame}[allowframebreaks]
@@ -346,9 +350,9 @@
 
     En vez de medir los projectores, se miden los observables
     \begin{itemize}
-        \item $Z_1 Z_2 = Z \otimes Z \otimes I$ \\
+        \item $Z_1 Z_2 = Z \otimes Z \otimes I = (\ket{00}\bra{00}+\ket{11}\bra{11}) \otimes I - (\ket{01}\bra{01}+\ket{10}\bra{10}) \otimes I$ \\
         \hspace{0.7cm} $\rightarrow$ +1, $1^{er}$ y $2^{do}$ qubit son iguales, o -1 si son distintos
-        \item $Z_2 Z_3 = I \otimes Z \otimes Z$ \\
+        \item $Z_2 Z_3 = I \otimes Z \otimes Z = I \otimes (\ket{00}\bra{00}+\ket{11}\bra{11}) - I \otimes (\ket{01}\bra{01}+\ket{10}\bra{10})$ \\
         \hspace{0.7cm} $\rightarrow$ +1, $2^{do}$ y $3^{er}$ qubit son iguales, o -1 si son distintos
     \end{itemize}
 
