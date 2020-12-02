@@ -29,6 +29,9 @@
 \usepackage{tikz}
 \usetikzlibrary{quantikz}
 
+% Package for subfigures
+\usepackage{subcaption}
+
 % For using gather for equations
 \usepackage{amsmath}
 
@@ -125,6 +128,13 @@
 \setbeamertemplate{itemize items}[default]
 \setbeamertemplate{itemize subitem}[circle]
 
+% Ideas de mejoras:
+%  - Simplificar los estados para que se entiendan más
+%  - Quitar un poco de info (capaz las diapos de análisis de que tan bien funciona?) como para poder hablar más tranquilo
+%  - Ver si tengo algo donde pueda usar un lapiz sobre el pdf
+%  - Capaz estaría bueno que las diapos estén más ordenadas para matchear lo que yo quiero decir así no me confunden
+%  - Aclarar más el hecho que todo esto funciona solo para errores en 1 qubit
+
 \begin{frame}
 	\frametitle{Quantum error correction} % Table of contents slide, comment this block out to remove it
 	\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
@@ -140,6 +150,7 @@
     %   Continuar con como esto se puede después expandir a gates ruidosas
     %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \textbf{Objetivo}:
 
     \begin{figure}[H]
         \centering
@@ -148,11 +159,15 @@
         \end{quantikz}
     \end{figure}
 
-    \textbf{Idea principal}: Agregar redundancia a los mensajes para que sean resilientes al ruido
+    \vspace{0.6cm}
 
     \textit{Las ideas presentadas se usan como base para tolerar fallas en cualquier operación cuántica}
 
     \framebreak
+
+    \textbf{Idea principal}: Agregar redundancia a los mensajes para que sean resilientes al ruido
+
+    \vspace{0.3cm}
 
     \begin{figure}[H]
         \centering
@@ -163,9 +178,10 @@
         \end{quantikz}
     \end{figure}
 
-    \textbf{Asunci\'on:} el encodeo y desencodeo de mensajes se puede hacer sin error
+    \vspace{0.3cm}
+
     \begin{itemize}
-        \item Existen formas de quitar esta asunci\'on
+        \item Asumimos que el encodeo y desencodeo de mensajes se puede hacer sin error (existen formas de quitar esta asunci\'on)
     \end{itemize}
 	
 \end{frame}
@@ -266,22 +282,36 @@
     \framebreak
     
     \begin{itemize}
-        \item \textbf{Encoding:}
+        \item \textbf{Encoding:} $a \ket{0} + b \ket{1} \rightarrow a \ket{000} + b \ket{111}$
     \end{itemize}
 
-    \begin{figure}[H]
+    \vspace{0.3cm}
+
+    \begin{figure}
         \centering
-        \begin{quantikz}
-            \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \qw \\
-            \lstick{$\ket{0}$}    & \targ{}  & \qw      & \qw \\
-            \lstick{$\ket{0}$}    & \qw      & \targ{}  & \qw 
-        \end{quantikz}
+        \begin{subfigure}{0.2\textwidth}
+            \centering
+            \begin{gather*}
+                \ket{0} \rightarrow \ket{000} \\
+                \ket{1} \rightarrow \ket{111}
+            \end{gather*}
+        \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}
+            \centering
+            \begin{quantikz}
+                \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \qw \\
+                \lstick{$\ket{0}$}    & \targ{}  & \qw      & \qw \\
+                \lstick{$\ket{0}$}    & \qw      & \targ{}  & \qw 
+            \end{quantikz}
+        \end{subfigure}
     \end{figure}
 
     \framebreak
 
     \begin{itemize}
         \item \textbf{Error detection \& recovery:}
+        
+        \textit{Error syndrome:} medición que no altera el estado medido
     \end{itemize}
 
     \begin{center}
@@ -299,7 +329,7 @@
     % P0 + P1 + P2 + P3 = I -> la medición me va a dar algunos de ellos
     % Ante un caso (no error/bit i flippado) Pi da con probabilidad 1 y no altera el estado
 
-    \textbf{Error syndrome:} medición que no altera el estado medido
+    
 \end{frame}
 
 \begin{frame}[allowframebreaks]
@@ -419,19 +449,32 @@
     \framebreak
     
     \begin{itemize}
-        \item \textbf{Encoding:}
+        \item \textbf{Encoding:} $a \ket{0} + b \ket{1} \rightarrow a \ket{+++} + b \ket{---}$
     \end{itemize}
 
-    \begin{figure}[H]
+    \begin{figure}
         \centering
-        \begin{quantikz}
-            \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \gate{H} & \qw \\
-            \lstick{$\ket{0}$}    & \targ{}  & \qw      & \gate{H} & \qw \\
-            \lstick{$\ket{0}$}    & \qw      & \targ{}  & \gate{H} & \qw 
-        \end{quantikz}
+        \begin{subfigure}{0.2\textwidth}
+            \centering
+            \begin{gather*}
+                \ket{0} \rightarrow \ket{+++} \\
+                \ket{1} \rightarrow \ket{---}
+            \end{gather*}
+        \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}
+            \centering
+            \begin{tikzpicture}
+                \node[scale=0.8] {
+                    \begin{quantikz}
+                        \lstick{$\ket{\psi}$} & \ctrl{1} & \ctrl{2} & \gate{H} & \qw \\
+                        \lstick{$\ket{0}$}    & \targ{}  & \qw      & \gate{H} & \qw \\
+                        \lstick{$\ket{0}$}    & \qw      & \targ{}  & \gate{H} & \qw 
+                    \end{quantikz}
+                };
+            \end{tikzpicture}
+        \end{subfigure}
     \end{figure}
 
-    \framebreak
 
     \begin{itemize}
         \item \textbf{Error detection \& recovery:}
@@ -439,32 +482,31 @@
 
     \begin{figure}
         \centering
-        \[
-            P_j \rightarrow H^{\otimes^3} P_j H^{\otimes^3}
-        \]
-        \caption{Projectores adaptados}
+        \begin{subfigure}{0.2\textwidth}
+            \[
+                P_j \rightarrow H^{\otimes^3} P_j H^{\otimes^3}
+            \]
+            \subcaption{Projectores adaptados}
+            % Las Hs del lado izquierdo son para que el estado no cambie
+        \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}
+            \centering
+            \begin{gather*}
+                H^{\otimes^3} Z_1 Z_2 H^{\otimes^3} = X_1 X_2 \\
+                H^{\otimes^3} Z_2 Z_3 H^{\otimes^3} = X_2 X_3
+            \end{gather*}
+            \subcaption{Observables adaptados}
+            % Las Hs del lado izquierdo son para que el estado no cambie
+            % X = |+><+| - |-><-|
+        \end{subfigure}
     \end{figure}
-    % Las Hs del lado izquierdo son para que el estado no cambie
 
-    \begin{figure}
-        \centering
-        \begin{gather*}
-            H^{\otimes^3} Z_1 Z_2 H^{\otimes^3} = X_1 X_2 \\
-            H^{\otimes^3} Z_2 Z_3 H^{\otimes^3} = X_2 X_3
-        \end{gather*}
-        \caption{Observables adaptados}
-    \end{figure}
-    % Las Hs del lado izquierdo son para que el estado no cambie
-    % X = |+><+| - |-><-|
+    \begin{itemize}
+        \item \textbf{Análisis de error:} mismos resultados que los de \textit{3 qubit flip code}
+    \end{itemize}
 
 \end{frame}
 
-\begin{frame}[allowframebreaks]
-    \frametitle{3 qubit phase code - análisis de error}
-
-    Aplican los mismos resultados que en el análisis del \textit{3 qubit flip code}
-
-\end{frame}
 
 \subsection{Shor code}
 
@@ -490,24 +532,21 @@
     \framebreak
     
     \begin{itemize}
-        \item \textbf{Encoding:}
+        \item \textbf{Encoding:} concatenation de 3 qubit phase flip code y 3 qubit bit flip code 
     \end{itemize}
 
-    \begin{gather*}
-        \ket{0} \rightarrow \ket{0_L} \equiv \frac{(\ket{000} + \ket{111})(\ket{000} + \ket{111})(\ket{000} + \ket{111})}{2\sqrt{2}} \\
-        \ket{1} \rightarrow \ket{1_L} \equiv \frac{(\ket{000} - \ket{111})(\ket{000} - \ket{111})(\ket{000} - \ket{111})}{2\sqrt{2}}
-    \end{gather*}
-
-    \framebreak
-
-    \begin{itemize}
-        \item \textbf{Encoding:}
-    \end{itemize}
-
-    \begin{figure}[H]
+    \begin{figure}
         \centering
+        \begin{subfigure}{0.5\textwidth}
+            \begin{gather*}
+                \ket{0} \rightarrow \ket{0_L} \equiv \frac{(\ket{000} + \ket{111})^{\otimes^3}}{2\sqrt{2}} \\
+                \ket{1} \rightarrow \ket{1_L} \equiv \frac{(\ket{000} - \ket{111})^{\otimes^3}}{2\sqrt{2}}
+            \end{gather*}
+        \end{subfigure}%
+        \begin{subfigure}{0.5\textwidth}
+            \centering
         \begin{tikzpicture}
-        \node[scale=0.85] {
+        \node[scale=0.75] {
         \begin{quantikz}
             \lstick{$\ket{\psi}$} & \ctrl{3} & \ctrl{6} & \gate{H}              & \qw                 & \ctrl{1} & \ctrl{2} & \qw \\
                                   &          &          &                       & \lstick{$\ket{0}$}  & \targ{}  & \qw      & \qw \\
@@ -521,6 +560,7 @@
         \end{quantikz}
         };
         \end{tikzpicture}
+        \end{subfigure}
     \end{figure}
 
     \framebreak
