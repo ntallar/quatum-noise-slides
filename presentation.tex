@@ -84,7 +84,7 @@
 \let\@@magyar@captionfix\relax
 \makeatother
 
-\title[Quantum error-correction]{Quantum error-correction}
+\title[Corrección de errores]{Corrección de errores}
 %\subtitle{Subtitle Of Presentation}
 
 %\beamertemplatenavigationsymbolsempty
@@ -136,7 +136,7 @@
 %  - Aclarar más el hecho que todo esto funciona solo para errores en 1 qubit
 
 \begin{frame}
-	\frametitle{Quantum error correction} % Table of contents slide, comment this block out to remove it
+	\frametitle{Corrección de errores} % Table of contents slide, comment this block out to remove it
 	\tableofcontents % Throughout your presentation, if you choose to use \section{} and \subsection{} commands, these will automatically be printed on this slide as an overview of your presentation
 \end{frame}
 
@@ -311,7 +311,7 @@
     \begin{itemize}
         \item \textbf{Error detection \& recovery:}
         
-        \textit{Error syndrome:} medición que no altera el estado medido
+        \textit{Error syndrome measurement:} medición que no altera el estado medido
     \end{itemize}
 
     \begin{center}
@@ -588,7 +588,10 @@
             
             $\ket{000} + \ket{111} \rightarrow \ket{000} - \ket{111}$
 
-            Por lo que puede ser detectado comparando los signos de los bloques % FIXME: como se hace esto?
+            Por lo que puede ser detectado comparando los signos de los bloques:
+            \[
+                X_1X_2X_3X_4X_5X_6 \ y \ X_4X_5X_6X_7X_8X_9
+            \]
 
             \item \textit{Recovery:} Se aplica Z a cualquier qubit del bloque afectado
         \end{itemize}
@@ -626,7 +629,7 @@
         
         \framebreak
 
-        Entonces un error arbitrario se puede pensar como que lleva un estado $\psi$ a una superposición de los estados:
+        Entonces un error arbitrario se puede pensar como que lleva un estado $\ket{\psi}$ a una superposición de los estados:
         \[
             \ket{\psi}, X_1\ket{\psi}, Z_1\ket{\psi}, X_1Z_1\ket{\psi}
         \]
